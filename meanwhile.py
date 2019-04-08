@@ -9,6 +9,10 @@ class Future:
     def done(self):
         return True
 
+    def __iter__(self):
+        # Makes it possible to await on the future itself.
+        yield self
+
 
 class SleepFuture(Future):
     """A future that is finished after set time."""
@@ -21,17 +25,16 @@ class SleepFuture(Future):
 
 class PinChangeFuture(Future):
     """A future that is finished when a pin value changes."""
-    def __init__(self, pin):
-        self.pin = pin
-        self.last_value = pin.value
+    def __init__(self, pins):
+        self.pins = tuple((pin, pin.value) for pin in pins)
 
     def done(self):
-        return self.last_value != self.pin.value
+        return any(pin.value != value for pin, value in self.pins)
 
 
-def watch_pin(pin):
+def watch_pin(*pins):
     """Asynchronously wait until a pin changes value."""
-    yield PinChangeFuture(pin)
+    yield PinChangeFuture(pins)
 
 
 def sleep(seconds):
