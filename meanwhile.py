@@ -23,10 +23,10 @@ class PinChangeFuture(Future):
         self.last_value = pin.value
 
     def done(self):
-        return self.last_value != pin.value
+        return self.last_value != self.pin.value
 
 
-def pin_changed(pin):
+def watch_pin(pin):
     yield PinChangeFuture(pin)
 
 
@@ -42,7 +42,7 @@ def start_soon(*awaitables):
 def run(*awaitables):
     start_soon(*awaitables)
     while futures:
-        for awaitable, future in futures.iteritems():
+        for awaitable, future in futures.items():
             if future.done():
                 break
         else:

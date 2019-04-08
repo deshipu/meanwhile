@@ -5,10 +5,11 @@ import digitalio
 
 #async
 def blink1(pin):
-    io = digitalio.DigitalInputOutput(pin)
+    io = digitalio.DigitalInOut(pin)
     io.switch_to_output()
     while True:
-        io.value = not pin.value
+        print("blink!")
+        io.value = not io.value
         #await
         yield from meanwhile.sleep(1)
 
@@ -21,7 +22,7 @@ def blink2(pin):
 
 
 def pin_change(pin):
-    io = digitalio.DigitalInputOutput(pin)
+    io = digitalio.DigitalInOut(pin)
     while True:
         #await
         yield from meanwhile.watch_pin(io)
