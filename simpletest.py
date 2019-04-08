@@ -20,4 +20,12 @@ def blink2(pin):
     yield from blink1(pin)
 
 
-meanwhile.run(blink1(board.D1), blink2(board.D2))
+def pin_change(pin):
+    io = digitalio.DigitalInputOutput(pin)
+    while True:
+        #await
+        yield from meanwhile.watch_pin(io)
+        print("pin changed!")
+
+
+meanwhile.run(blink1(board.D1), blink2(board.D2), pin_change(board.D3))

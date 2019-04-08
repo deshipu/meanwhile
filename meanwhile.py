@@ -17,6 +17,19 @@ class SleepFuture(Future):
         return self.when <= time.monotonic()
 
 
+class PinChangeFuture(Future):
+    def __init__(self, pin):
+        self.pin = pin
+        self.last_value = pin.value
+
+    def done(self):
+        return self.last_value != pin.value
+
+
+def pin_changed(pin):
+    yield PinChangeFuture(pin)
+
+
 def sleep(seconds):
     yield SleepFuture(time.monotonic() + seconds)
 
