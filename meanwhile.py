@@ -1,7 +1,7 @@
 import time
 
 
-futures = {}
+futures = []
 
 
 class Future:
@@ -45,26 +45,26 @@ def sleep(seconds):
 def start_soon(*awaitables):
     """Schedule awaitables to be executed."""
     for awaitable in awaitables:
-        futures[awaitable] = Future()
+        futures.append((awaitable, Future()))
 
 
 def run(*awaitables):
     """Run all scheduled and specified awaitables until they all finish."""
     start_soon(*awaitables)
     while futures:
-        # Find an awaitable that is not blocked on a future.
-        for awaitable, future in futures.items():
+        # Find the first awaitable that is not blocked on a future.
+        for i, (awaitable, future) in enumerate(futures):
             if future.done():
                 break
         else:
             continue
         # Remove that future from the list.
-        del futures[awaitable]
+        del futures[i]
         # Run the awaitable until it hits another future or finishes.
         try:
             future = next(awaitable)
         except StopIteration:
             pass
         else:
-            # Add the new future to the list.
-            futures[awaitable] = future
+            # Add the new future to the end of the list.
+            futures.append((awaitable, future))
